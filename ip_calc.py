@@ -34,4 +34,79 @@ def invert_bin_address(address):
     return inverted_address
 
 
+def get_ip_from_raw_address(raw_address):
+    """
+    Get ip address and a mask separated by "/" and
+    Return ip address
+    >>> get_ip_from_raw_address("192.168.1.15/24")
+    '192.168.1.15'
+    """
+    ip_address, _ = raw_address.split("/")
+    return ip_address
+
+
+def get_network_address_from_raw_address(raw_address):
+    """
+    Get network address from raw address
+    >>> get_network_address_from_raw_address("215.017.125.177/28")
+    '215.17.125.176'
+    """
+    ip_address, _ = raw_address.split("/")
+
+    # convert mask to decimal
+    bin_mask = get_binary_mask_from_raw_address(raw_address)
+    decimal_mask = '.'.join([str(bin_to_decimal_address(block)) for block in bin_mask.split('.')])
+
+    network_adress_blocks = []
+    for decimal_mask_block, ip_address_block in zip(decimal_mask.split('.'), ip_address.split('.')):
+        network_adress_blocks.append(f"{int(decimal_mask_block) & int(ip_address_block)}")
+    return '.'.join(network_adress_blocks)
+
+
+def get_broadcast_address_from_raw_address(raw_address):
+    """
+    Get broadcast address from raw address
+    >>> get_broadcast_address_from_raw_address('230.250.33.233/13')
+    '230.255.255.255'
+    >>> get_broadcast_address_from_raw_address("192.168.10.10/16")
+    '192.168.255.255'
+    >>> get_broadcast_address_from_raw_address('215.017.125.177/28')
+    '215.17.125.191'
+    >>> get_broadcast_address_from_raw_address('91.124.230.205/30')
+    '91.124.230.207'
+    """
+    ip_address, _ = raw_address.split("/")
+    bin_mask = get_binary_mask_from_raw_address(raw_address)
+    inverted_bin_mask = invert_bin_address(bin_mask)
+    decimal_mask = bin_to_decimal_address(inverted_bin_mask)
+
+    broadcast_address_blocks = []
+    for decimal_mask_block, ip_address_block in zip(decimal_mask.split('.'), ip_address.split('.')):
+        broadcast_address_blocks.append(f"{int(decimal_mask_block) | int(ip_address_block)}")
+    return '.'.join(broadcast_address_blocks)
+
+
+def get_binary_mask_from_raw_address(raw_address):
+    """
+    Get binary mask from raw address
+    >>> get_binary_mask_from_raw_address('91.124.230.205/30')
+    '11111111.11111111.11111111.11111100'
+    >>> get_binary_mask_from_raw_address("215.017.125.177/28")
+    '11111111.11111111.11111111.11110000'
+    >>> get_binary_mask_from_raw_address("215.017.125.177/24")
+    '11111111.11111111.11111111.00000000'
+    """
+    _, mask = raw_address.split("/")
+    mask = int(mask)
+    mask_bin = ''
+    for i in range(1, 32 + 1):
+        if i <= mask:
+            mask_bin += '1'
+        else:
+            mask_bin += '0'
+        if not i % 8 and i != 32:
+            mask_bin += '.'
+    return mask_bin
+
+
 
