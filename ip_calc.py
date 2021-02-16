@@ -188,4 +188,22 @@ def check_private_ip_address_from_raw_address(raw_address):
     return False
 
 
-
+if __name__ == '__main__':
+    user_raw_address = input()
+    # check if the input is right
+    try:
+        user_ip_address, user_mask = user_raw_address.split("/")
+    except ValueError:
+        print('Missing prefix')
+    try:
+        print(f"IP address: {get_ip_from_raw_address(user_raw_address)}")
+        print(f"Network Address: {get_network_address_from_raw_address(user_raw_address)}")
+        print(f"Broadcast Address: {get_broadcast_address_from_raw_address(user_raw_address)}")
+        print(f"Binary Subnet Mask: {get_binary_mask_from_raw_address(user_raw_address)}")
+        print(f"FIH IP: {get_first_usable_ip_address_from_raw_address(user_raw_address)}")
+        print(f"PUH IP: {get_penultimate_usable_ip_address_from_raw_address(user_raw_address)}")
+        print(f"Usable Hosts: {get_number_of_usable_hosts_from_raw_address(user_raw_address)}")
+        print(f"IP class {get_ip_class_from_raw_address(user_raw_address)}")
+        print(f"IP type private {check_private_ip_address_from_raw_address(user_raw_address)}")
+    except ValueError:
+        print("Error")
