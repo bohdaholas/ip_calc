@@ -139,3 +139,53 @@ def get_penultimate_usable_ip_address_from_raw_address(raw_address):
     return last_usable_ip_address
 
 
+def get_number_of_usable_hosts_from_raw_address(raw_address):
+    """
+    Get number of usable hosts from raw address
+    >>> get_number_of_usable_hosts_from_raw_address('91.124.230.205/30')
+    2
+    """
+    _, mask = raw_address.split("/")
+    mask_length = int(mask)
+    return 2 ** (32 - mask_length) - 2
+
+
+def get_ip_class_from_raw_address(raw_address):
+    """
+    Get ip class from raw address
+    >>> get_ip_class_from_raw_address('91.124.230.205/30')
+    'A'
+    """
+    ip_address, _ = raw_address.split("/")
+    first_octet = int(ip_address.split('.')[0])
+    if 0 <= first_octet <= 126:
+        return 'A'
+    if 128 <= first_octet <= 191:
+        return 'B'
+    if 192 <= first_octet <= 223:
+        return 'C'
+    if 224 <= first_octet <= 239:
+        return 'D'
+    if 247 <= first_octet <= 255:
+        return 'E'
+    return None
+
+
+def check_private_ip_address_from_raw_address(raw_address):
+    """
+    Check private ip address from raw address
+    >>> check_private_ip_address_from_raw_address('91.124.230.205/30')
+    False
+    """
+    ip_address, _ = raw_address.split("/")
+    if ip_address.startswith('10') or ip_address.startswith('192.168'):
+        return True
+    if ip_address.startswith('172'):
+        octets = ip_address.split('.')
+        second_octet = int(octets[1])
+        if 16 <= second_octet <= 31:
+            return True
+    return False
+
+
+
