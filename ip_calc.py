@@ -109,4 +109,33 @@ def get_binary_mask_from_raw_address(raw_address):
     return mask_bin
 
 
+def get_first_usable_ip_address_from_raw_address(raw_address):
+    """
+    Get first usable ip address from raw address
+    >>> get_first_usable_ip_address_from_raw_address('91.124.230.205/30')
+    '91.124.230.205'
+    """
+    network_address = get_network_address_from_raw_address(raw_address)
+    octets = network_address.split('.')
+    octets[-1] = f"{int(octets[-1]) + 1}"
+    first_usable_ip_address = '.'.join(octets)
+    return first_usable_ip_address
+
+
+def get_penultimate_usable_ip_address_from_raw_address(raw_address):
+    """
+    Get penultimate usable ip address from raw address
+    >>> get_penultimate_usable_ip_address_from_raw_address('230.250.33.233/13')
+    '230.255.255.253'
+    >>> get_penultimate_usable_ip_address_from_raw_address("192.168.10.10/16")
+    '192.168.255.253'
+    >>> get_penultimate_usable_ip_address_from_raw_address('91.124.230.205/30')
+    '91.124.230.205'
+    """
+    broadcast_address = get_broadcast_address_from_raw_address(raw_address)
+    octets = broadcast_address.split('.')
+    octets[-1] = f"{int(octets[-1]) - 2}"
+    last_usable_ip_address = '.'.join(octets)
+    return last_usable_ip_address
+
 
